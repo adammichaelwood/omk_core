@@ -10,48 +10,16 @@ env:
     - TOXENV=docs
 matrix:
   include:
-    - python: '7.-'
+{%- for env, config in tox_environments|dictsort %}{{ '' }}
+    - python: '{{ "{0[0]}".format(env.split("-")) if env.startswith("pypy") else "{0[2]}.{0[3]}".format(env) }}'
+{% if env.startswith('py37') %}
+      dist: xenial
+      sudo: required
+{% endif %}
       env:
-        - TOXENV=2.7-cover,report,coveralls,codecov
-    - python: '7.-'
-      env:
-        - TOXENV=2.7-nocov
-    - python: '4.-'
-      env:
-        - TOXENV=3.4-cover,report,coveralls,codecov
-    - python: '4.-'
-      env:
-        - TOXENV=3.4-nocov
-    - python: '5.-'
-      env:
-        - TOXENV=3.5-cover,report,coveralls,codecov
-    - python: '5.-'
-      env:
-        - TOXENV=3.5-nocov
-    - python: '6.-'
-      env:
-        - TOXENV=3.6-cover,report,coveralls,codecov
-    - python: '6.-'
-      env:
-        - TOXENV=3.6-nocov
-    - python: '7.-'
-      env:
-        - TOXENV=3.7-cover,report,coveralls,codecov
-    - python: '7.-'
-      env:
-        - TOXENV=3.7-nocov
-    - python: 'pypy'
-      env:
-        - TOXENV=pypy-cover,report,coveralls,codecov
-    - python: 'pypy'
-      env:
-        - TOXENV=pypy-nocov
-    - python: 'pypy3'
-      env:
-        - TOXENV=pypy3-cover,report,coveralls,codecov
-    - python: 'pypy3'
-      env:
-        - TOXENV=pypy3-nocov
+        - TOXENV={{ env }}{% if config.cover %},report,coveralls,codecov{% endif -%}
+{% endfor %}
+
 before_install:
   - python --version
   - uname -a
