@@ -11,7 +11,7 @@ import itertools
 
 from . import *
 
-
+@tonal_args
 def tonal_add(x, y):
     """Returns the value of x augmented by y.
 
@@ -25,9 +25,6 @@ def tonal_add(x, y):
     (0, 0, 1)
     """
 
-    if len(x) not in (2,3) or len(y) not in (2,3):
-        TypeError("Tonal primitives have two or three values.")
-
     if len(x) < len(y):
         raise TypeError("An octave designation cannot be added to an abstract tonal value.")
 
@@ -37,6 +34,7 @@ def tonal_add(x, y):
 
     return sum
 
+@tonal_args
 def tonal_subtract(x, y):
     """Returns the value of x diminished by y.
 
@@ -57,7 +55,7 @@ def tonal_subtract(x, y):
 
 
 
-
+@tonal_args
 def tonal_modulo(x):
     """Returns an octave-normalized rendering of x.
 
@@ -70,9 +68,6 @@ def tonal_modulo(x):
     >>> tonal_modulo((-1, -1)) # B - 1 octave
     (6, 11, -1)
     """
-
-    if len(x) not in (2,3):
-        raise TypeError("Tonal primitives have two or three values.")
 
     if x[0] in range(D_LEN) and x[1] in range(C_LEN):
         return x
