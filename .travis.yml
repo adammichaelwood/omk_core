@@ -10,12 +10,6 @@ env:
     - TOXENV=docs
 matrix:
   include:
-    - python: '7.-'
-      env:
-        - TOXENV=2.7-cover,report,coveralls,codecov
-    - python: '7.-'
-      env:
-        - TOXENV=2.7-nocov
     - python: '4.-'
       env:
         - TOXENV=3.4-cover,report,coveralls,codecov
