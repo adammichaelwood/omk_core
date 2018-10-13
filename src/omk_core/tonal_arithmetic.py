@@ -9,7 +9,8 @@ These functions operate on tuples of the form `(d, c, o)`, where
 
 import itertools
 
-from . import *
+from .constants import *
+from .utils import *
 
 @tonal_args
 def tonal_add(x, y):
