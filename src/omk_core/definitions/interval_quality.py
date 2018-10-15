@@ -1,7 +1,4 @@
 from ..utils.method_dispatch import methoddispatch
-# ! I cannot figure out this import.
-
-print("working")
 
 """
 :dfn:`Quality` is a characteristic of an :term:`interval`
