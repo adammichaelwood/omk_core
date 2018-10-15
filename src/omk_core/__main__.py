@@ -1,5 +1,5 @@
 """
-Entrypoint module, in case you use `python -momk_core`.
+Entrypoint module, in case you use `python -m omk_core`.
 
 
 Why does this file exist, and why __main__? For more info, read:

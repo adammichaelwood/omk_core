@@ -35,3 +35,4 @@ def err_if_not_tonal(x):
     if len(x) not in (2,3):
         raise TypeError("Tonal primitives have two or three values.")
     return True
+

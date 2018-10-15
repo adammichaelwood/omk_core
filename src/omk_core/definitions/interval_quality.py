@@ -1,3 +1,8 @@
+from ..utils.method_dispatch import methoddispatch
+# ! I cannot figure out this import.
+
+print("working")
+
 """
 :dfn:`Quality` is a characteristic of an :term:`interval`
 that specifies the exact :term:`magnitude`.
@@ -35,6 +40,7 @@ we can map them onto a short number line:
 
 """
 
+
 q_vals = {
 - 2.5 : 'dbl_dimished-from_maj_min',
 - 2   : 'dbl_diminished-from_perfect',
@@ -56,6 +62,22 @@ q_vals = {
 class IntervalQuality:
 
     qualities = {}
+
+    def __new__(cls, q, rel_number=None):
+
+        if rel_number is None:
+            return cls.get_quality(q)
+
+        return super().__new__(cls)
+
+    @methoddispatch
+    def get_quality(self, q):
+        print("base impl")
+
+    @get_quality.register(int)
+    def _(self, q):
+        print("int impl")
+
 
     def __init__(self, name, rel_number):
         self.name = name
@@ -107,5 +129,3 @@ class IntervalQuality:
 # Instantiate the Interval Qualities
 for number, name in q_vals.items():
     IntervalQuality(name, number)
-
-
