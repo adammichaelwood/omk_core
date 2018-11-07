@@ -1,3 +1,5 @@
+import math
+
 from ..utils.method_dispatch import methoddispatch
 
 """
@@ -23,7 +25,7 @@ before becoming a :iq:`diminished` interval.
 
 Consequently,
 if we wish to map qualities to numbers
-so that we can easily move from one another,
+so that we can easily move from one to another,
 we must recognized that there is not one single meaning of :iq:`augmented: or :iq:`diminished`.
 That is, (:iq:`augmented` - 1) might be :iq:`perfect` or :iq:`major.
 Therefore, there are two meanings of :iq:`augmented`.
@@ -31,7 +33,7 @@ And (:iq:`dminished` + 1) might be :iq:`perfect` or :iq:`minor`.
 Therefore, there two meanings of :iq:`diminished`.
 
 To represent these relationships
-in a way that lends itself easily toward
+in a way that lends itself easily to
 arithmetic tranformation,
 we can map them onto a short number line:
 
@@ -54,26 +56,56 @@ q_vals = {
 
 """
 
+..  devnote:
+
+    This may cause a problem with quarter tones.
+    I have a hunch they could be represented with composite numbers:
+    (x + 0.5j)
+
+
 """
 
 class IntervalQuality:
 
+
     qualities = {}
 
-    def __new__(cls, q, rel_number=None):
+    def __new__(cls, name, rel_number=None):
+        """If an IntervalQuality is instantiated
+        with an existing name and no number,
+        an existing IntervalQuality is returned.
+
+        >>> IntervalQuality("test_quality", 100) is IntervalQuality("test_quality")
+        True
+
+        >>> IntervalQuality.qualities[0] is IntervalQuality("perfect")
+        True
+
+        """
 
         if rel_number is None:
-            return cls.get_quality(q)
+            return cls._get_quality(name)
 
-        return super().__new__(cls)
+        try:
+            return cls._get_quality(rel_number)
+        except:
+            return super().__new__(cls)
 
     @methoddispatch
-    def get_quality(self, q):
-        print("base impl")
+    def _get_quality(cls, q):
+        raise TypeError("The quality identifier supplied is not a supported type.")
 
-    @get_quality.register(int)
-    def _(self, q):
-        print("int impl")
+    @_get_quality.register(int)
+    @_get_quality.register(float)
+    def _(cls, q):
+        return cls.qualities[q]
+
+
+    @_get_quality.register(str)
+    def _(cls, q):
+        for quality in cls.qualities:
+            if quality.name == q:
+                return quality
 
 
     def __init__(self, name, rel_number):
@@ -88,10 +120,7 @@ class IntervalQuality:
            the interval of the same number
            in the diatonic major scale."""
 
-        if type(self.__rel_number) is int:
-            return self.__rel_number
-        else:
-            return int(self.__rel_number - 0.5)
+        return math.floor(self.__rel_number)
 
 
     # Arithmetic operations
