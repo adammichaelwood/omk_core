@@ -36,7 +36,7 @@ DIATONIC = [
 
 class ScaleDegree:
 
-    def __init__(diatonic_value, chromatic_value, name_in_c="", interval_quality="", interval_label=""):
+    def __init__(self, diatonic_value, chromatic_value, name_in_c="", interval_quality="", interval_label=""):
         self.diaonic_value = diatonic_value
         self.chromatic_value = chromatic_value
         self.name_in_c = name_in_c
