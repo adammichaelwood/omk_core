@@ -9,20 +9,26 @@ These functions operate on tuples of the form `(d, c, o)`, where
 
 import itertools
 
-from .constants import *
-from .utils import *
+from constants import *
+from utils import *
 
-@tonal_args
-def tonal_add(x, y):
+#@tonal_args
+def tonal_sum(x, y):
     """Returns the value of x augmented by y.
 
     Examples
     --------
 
-    >>> tonal_add((0, 0), (2, 3))
+    >>> tonal_sum((0, 0), (2, 3))
     (2, 3)
 
-    >>> tonal_add((3, 6), (4, 6))
+    >>> tonal_sum((3, 6), (4, 6))
+    (0, 0)
+
+    >>> tonal_sum((0, 0, 0), (2, 3))
+    (2, 3, 0)
+
+    >>> tonal_sum((3, 6, 0), (4, 6))
     (0, 0, 1)
     """
 
@@ -35,60 +41,71 @@ def tonal_add(x, y):
 
     return sum
 
-@tonal_args
-def tonal_subtract(x, y):
+#@tonal_args
+def tonal_diff(x, y):
     """Returns the value of x diminished by y.
 
     Examples
     --------
 
-    >>> tonal_subtract((2, 3), (2, 3))
+    >>> tonal_diff((2, 3), (2, 3))
     (0, 0)
 
-    >>> tonal_subtract((0,0), (1, 1))
+    >>> tonal_diff((0, 0), (1, 1))
+    (6, 11)
+
+    >>> tonal_diff((0, 0, 0), (1, 1))
     (6, 11, -1)
     """
 
-    if len(x) not in (2,3) or len(y) not in (2,3):
-        TypeError("Tonal primitives have two or three values.")
 
-    return tonal_add(x, negative_tuple(y))
+    return tonal_sum(x, negative_tuple(y))
 
 
 
-@tonal_args
+#@tonal_args
 def tonal_modulo(x):
     """Returns an octave-normalized rendering of x.
 
     Examples
     --------
 
-    >>> tonal_modulo((7, 12)) # C + 1 octave
+    >>> tonal_modulo((7, 12)) # C + 1 octave, no octave designation
+    (0, 0)
+
+    >>> tonal_modulo((7, 12, 0)) # C + 1 octave
     (0, 0, 1)
 
     >>> tonal_modulo((-1, -1)) # B - 1 octave
+    (6, 11)
+
+    >>> tonal_modulo((-1, -1, 0)) # B - 1 octave
     (6, 11, -1)
+
     """
 
+    # From (0,0) to (6.11) (inclusive), no modulo is needed.
     if x[0] in range(D_LEN) and x[1] in range(C_LEN):
         return x
 
-    if len(x) == 2:
-        x = (x[0], x[1], 0)
+    #if len(x) == 2:
+    #    x = (x[0], x[1], 0)
 
-    d_val = x[0] % D_LEN
-    d_oct = x[0] // D_LEN
-    c_val = x[1] % C_LEN
-    c_oct = x[1] // C_LEN
+    d_val = x[0] % D_LEN # The normalized diatonic value.
+    d_oct = x[0] // D_LEN # The additional diatonic octave.
+    c_val = x[1] % C_LEN # The normalized chromatic value.
+    c_oct = x[1] // C_LEN # The additional chromatic ocatve.
 
+    # The diatonic and chromatic additional octaves should be the same,
+    # otherwise there was some problem further up.
     if d_oct != c_oct:
         raise ValueError("Diatonic and chromatic values are not in the same octave.")
 
-    oct_val = x[2] + d_oct
+    if len(x) == 2:
+        return (d_val, c_val)
 
-    normalized_x = (d_val, c_val, oct_val)
-
-    return normalized_x
+    if len(x) == 3:
+        return (d_val, c_val, d_oct)
 
 
 def negative_tuple(x):
@@ -96,3 +113,7 @@ def negative_tuple(x):
     return tuple(-m for m in x)
 
 
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
