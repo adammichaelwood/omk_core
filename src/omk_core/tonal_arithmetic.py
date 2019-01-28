@@ -12,7 +12,7 @@ import itertools
 from constants import *
 from utils import *
 
-#@tonal_args
+@mus_utils.tonal_args
 def tonal_sum(x, y):
     """Returns the value of x augmented by y.
 
