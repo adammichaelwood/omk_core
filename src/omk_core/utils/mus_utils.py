@@ -1,4 +1,6 @@
-def tonal_args(func):
+from constants import *
+
+def tonal_args(func, instance, args, kwargs):
     """Decorates a function that should only take valid tonal primitives as arguments.
 
     A tonal primitive is a tuple of two or three values,
