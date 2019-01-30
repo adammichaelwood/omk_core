@@ -30,6 +30,9 @@ def tonal_sum(x, y):
 
     >>> tonal_sum((3, 6, 0), (4, 6))
     (0, 0, 1)
+
+    >>> tonal_sum((6, 11, 1), (2, 4))
+    (1, 3, 2)
     """
 
     if len(x) < len(y):
@@ -56,6 +59,9 @@ def tonal_diff(x, y):
 
     >>> tonal_diff((0, 0, 0), (1, 1))
     (6, 11, -1)
+
+    >>> tonal_diff((0,1),(1,1))
+    (6, 0)
     """
 
 
@@ -103,6 +109,12 @@ def tonal_modulo(x):
     >>> tonal_modulo((-1, -1, 0)) # B - 1 octave
     (6, 11, -1)
 
+    >>> tonal_modulo((-1, 0))
+    (6, 0)
+
+    >>> tonal_modulo((7, 12, 1))
+    (0, 0, 2)
+
     """
 
     # From (0,0) to (6.11) (inclusive), no modulo is needed.
@@ -115,18 +127,18 @@ def tonal_modulo(x):
     d_val = x[0] % D_LEN # The normalized diatonic value.
     d_oct = x[0] // D_LEN # The additional diatonic octave.
     c_val = x[1] % C_LEN # The normalized chromatic value.
-    c_oct = x[1] // C_LEN # The additional chromatic ocatve.
+    # c_oct = x[1] // C_LEN # The additional chromatic ocatve.
 
     # The diatonic and chromatic additional octaves should be the same,
     # otherwise there was some problem further up.
-    if d_oct != c_oct:
-        raise ValueError("Diatonic and chromatic values are not in the same octave.")
+    #if d_oct != c_oct:
+    #    raise ValueError("Diatonic and chromatic values are not in the same octave.")
 
     if len(x) == 2:
         return (d_val, c_val)
 
     if len(x) == 3:
-        return (d_val, c_val, d_oct)
+        return (d_val, c_val, (x[2] + d_oct))
 
 
 def negative_tuple(x):

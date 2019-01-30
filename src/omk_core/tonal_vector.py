@@ -75,9 +75,23 @@ class TonalVector(tuple):
     ### Tonal Arithmetic ###
 
     def __add__(self, x):
+        """
+        >>> TonalVector((0,1)) + TonalVector((1,1))
+        TonalVector((1, 2))
+
+        >>> TonalVector((6,11,1)) + TonalVector((1,1))
+        TonalVector((0, 0, 2))
+        """
         return TonalVector(ta.tonal_sum(self, x))
 
-    def __subtract__(self, x):
+    def __sub__(self, x):
+        """
+        >>> TonalVector((0,1)) - TonalVector((1,1))
+        TonalVector((6, 0))
+
+        >>> TonalVector((6,11,1)) - TonalVector((1,1))
+        TonalVector((5, 10, 1))
+        """
         return TonalVector(ta.tonal_diff(self, x))
 
     def __abs__(self):
