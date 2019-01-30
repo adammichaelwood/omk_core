@@ -1,6 +1,6 @@
 from dotmap import DotMap
 
-from . import tonal_arithmetic as ta
+import tonal_arithmetic as ta
 
 # "M_ajor Scale"
 MS = [
@@ -53,9 +53,23 @@ class TonalVector(tuple):
     ### Util ###
 
     def __repr__(self):
+        """
+        >>> TonalVector((0,0))
+        TonalVector((0, 0))
+
+        >>> TonalVector((2,4,1))
+        TonalVector((2, 4, 1))
+        """
         return "TonalVector({})".format(repr(tuple(self)))
 
     def __str__(self):
+        """
+        >>> print(TonalVector((0,1)))
+        TonalVector((0, 1)) # C♯ | NotImplemented
+
+        >>> print(TonalVector((2,3,1)))
+        TonalVector((2, 3, 1)) # E♭ 1 | NotImplemented
+        """
         return "{} # {} | {}".format(repr(self), self.note.unicode, self.interval.unicode)
 
     ### Tonal Arithmetic ###
@@ -102,7 +116,7 @@ class TonalVector(tuple):
         # how sharp or flat
         @property
         def _modifier_value(self): 
-            return self._v.d - self._v._Q.d
+            return  self._v.c - self._v._Q.c
 
         @property
         def _modifier(self):
@@ -115,7 +129,7 @@ class TonalVector(tuple):
                 ustr = "".join([ustr, self._modifier.u])
 
             if self._v._has_octave:
-                ustr = " ".join([ustr, self._v.o + octave_modifier])
+                ustr = " ".join([ustr, str(self._v.o + octave_modifier)])
             
             return ustr
 
@@ -134,7 +148,7 @@ class TonalVector(tuple):
                 astr = "".join([astr, self._modifier.a])
 
             if self._v._has_octave:
-                astr = " ".join([astr, self._v.o + octave_modifier])
+                astr = " ".join([astr, str(self._v.o + octave_modifier)])
             
             return astr
             
@@ -154,7 +168,7 @@ class TonalVector(tuple):
                 lystr = "".join([lystr, self._modifier.ly])
 
             if self._v._has_octave and show_octave:
-                lystr = " ".join([lystr, self._v.o])
+                lystr = " ".join([lystr, str(self._v.o)])
             
             return lystr
 
@@ -170,4 +184,8 @@ class TonalVector(tuple):
 
         @property
         def unicode(self):
-            pass
+            return "NotImplemented"
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
