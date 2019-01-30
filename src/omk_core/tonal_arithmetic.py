@@ -9,7 +9,7 @@ These functions operate on tuples of the form `(d, c, o)`, where
 
 import itertools
 
-from constants import *
+from .constants import *
 from utils import *
 
 #@mus_utils.tonal_args
@@ -61,6 +61,27 @@ def tonal_diff(x, y):
 
     return tonal_sum(x, negative_tuple(y))
 
+#@tonal_args
+def tonal_invert(x, y=(0,0)):
+    """Returns the inversion of x on y.
+
+    The inversion is the value which is as far below x
+    as y is above x.
+
+    Examples
+    --------
+
+    >>> tonal_invert((2,4)) # The inversion of a Major Third is a Minor Sixth
+    (5, 8)
+
+    >>> tonal_invert((3,6)) # The inversion of a tritone is a tritone with a different name.
+    (4, 6)
+
+    >>> tonal_invert((4,7), (2,4)) # G is a min 3rd up from E. Down a min 3rd from E is C#.
+    (0, 1)
+    """
+
+    return tonal_diff(y, tonal_diff(x, y))
 
 
 #@tonal_args
@@ -112,6 +133,30 @@ def negative_tuple(x):
 
     return tuple(-m for m in x)
 
+def tonal_abs(x):
+    """Returns the distance from the origin (Middle C).
+    """
+
+    return abs(tonal_int(x))
+
+def tonal_int(x):
+
+    try:
+        return x[1] + x[2]*(C_LEN)
+    except IndexError:
+        return x[1]
+
+def tonal_greater_of(x,y):
+    if tonal_int(x) > tonal_int(y):
+        return x
+    else:
+        return y
+
+def tonal_lesser_of(x,y):
+    if tonal_int(x) < tonal_int(y):
+        return x
+    else:
+        return y
 
 
 if __name__ == "__main__":
