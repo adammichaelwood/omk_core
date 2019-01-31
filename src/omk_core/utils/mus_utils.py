@@ -70,3 +70,46 @@ def err_if_not_tonal(x):
 
     return True
 
+def qualify_octave(x):
+    """Returns a tuple of 3 values, from a tuple or 2 or 3 values.
+    The third value is either left alone or set to zero.
+
+    Examples
+    --------
+
+    >>> qualify_octave((0,0))
+    (0, 0, 0)
+
+    >>> qualify_octave((0,1,3))
+    (0, 1, 3)
+
+    """
+
+    if len(x) == 3:
+        return x
+
+    if len(x) == 2:
+        return (x[0], x[1], 0)
+
+    raise ValueError("qualify_octave accepts tuples of two or three values")
+
+def qualify_octave_as_needed(x, y):
+    """Returns x and y. If either one has a qualified octave, they both will upon return.
+    If neither does, they will continue not to.
+
+    Examples
+    --------
+
+    >>> qualify_octave_as_needed((0,0), (1,2))
+    (0, 0), (1, 2)
+
+    >>> qualify_octave_as_needed((0,0,1), (1,2))
+    (0, 0, 1), (1, 2, 0)
+
+    >>> qualify_octave_as_needed((0,0,1), (1,2,1))
+    (0, 0, 1), (1, 2, 1)
+    """
+    if len(x) == len(y):
+        return x, y
+    return qualify_octave(x), qualify_octave(y)
+

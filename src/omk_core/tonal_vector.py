@@ -68,7 +68,7 @@ class TonalVector(tuple):
         TonalVector((0, 1)) # C♯ | NotImplemented
 
         >>> print(TonalVector((2,3,1)))
-        TonalVector((2, 3, 1)) # E♭ 1 | NotImplemented
+        TonalVector((2, 3, 1)) # E♭1 | NotImplemented
         """
         return "{} # {} | {}".format(repr(self), self.note.unicode, self.interval.unicode)
 
@@ -91,25 +91,135 @@ class TonalVector(tuple):
 
         >>> TonalVector((6,11,1)) - TonalVector((1,1))
         TonalVector((5, 10, 1))
+
+        >>> abs(TonalVector((6,11,1)) - TonalVector((1,1,0))) == abs(TonalVector((1,1,0)) - TonalVector((6,11,1)))
+        True
         """
         return TonalVector(ta.tonal_diff(self, x))
 
+    def distance(self, x):
+        """Returns the smallest difference 
+        return TonalVector(ta.tonal_abs_diff(self, x))
+
+        >>> TonalVector((0,0,0)).distance(TonalVector((4,7,0)))
+        TonalVector((4, 7, 0))
+
+        >>> TonalVector((4,7,0)).distance(TonalVector((0,0,0)))
+        TonalVector((4, 7, 0))
+
+        >>> TonalVector((0,0)).distance(TonalVector((4,7)))
+        TonalVector((3, 5))
+        """
+        return TonalVector(ta.tonal_abs_diff(self, x))
+
+    def nearest_instance(self, x):
+        """Returns a Tonal Vector that has the same pitch class or interval type as x,
+        closest to self.
+
+        Examples
+        --------
+
+        >>> TonalVector((0,0)).nearest_instance(TonalVector((1,1,-3)))
+        TonalVector((1, 1))
+
+        >>> TonalVector((0,0)).nearest_instance(TonalVector((6,11,3)))
+        TonalVector((6, 11))
+
+        >>> TonalVector((0,0,0)).nearest_instance(TonalVector((1,1,-3)))
+        TonalVector((1, 1, 0))
+
+        >>> TonalVector((0,0,0)).nearest_instance(TonalVector((6,11,3)))
+        TonalVector((6, 11, -1))
+        """
+
+        return TonalVector(ta.tonal_nearest_instance(self,x))
+
+
     def __abs__(self):
+        """
+        >>> abs(TonalVector((0,0,-1)))
+        12
+
+        >>> abs(TonalVector((0,0,1)))
+        12
+        """
         return ta.tonal_abs(self)
 
     def __int__(self):
+        """
+        >>> int(TonalVector((0,0,-1)))
+        -12
+
+        >>> int(TonalVector((0,0,1)))
+        12
+        """
         return ta.tonal_int(self)
 
     def __gt__(self, x):
-        return int(self) > int(x)
+        """
+        >>> TonalVector((1,1,0)) > TonalVector((0,0,0))
+        True
+
+        >>> TonalVector((2,4,1)) > (3,5,1)
+        False
+
+        >>> TonalVector((3,6,1)) > 6
+        True
+        """
+        try:
+            return int(self) > int(x)
+        except TypeError:
+            return int(self) > ta.tonal_int(x)
 
     def __lt__(self, x):
-        return int(self) < int(x)
+        """
+        >>> TonalVector((1,1,0)) < TonalVector((0,0,0))
+        False
+
+        >>> TonalVector((2,4,1)) < (3,5,1)
+        True
+
+        >>> TonalVector((3,6,1)) < 6
+        False
+        """
+        try:
+            return int(self) < int(x)
+        except TypeError:
+            return int(self) < ta.tonal_int(x)
 
     def inversion(self, x=(0,0)):
+        """
+        >>> TonalVector((2,4)).inversion() # Maj3 --> min6
+        TonalVector((5, 8))
+
+        >>> TonalVector((5,8)).inversion() # min6 --> Maj3
+        TonalVector((2, 4))
+
+        >>> TonalVector((3,6)).inversion() # Aug4 --> dim5 (tritone)
+        TonalVector((4, 6))
+
+        >>> TonalVector((0,1,0)).inversion((0,0,0)) # augment unison --> diminished octave
+        TonalVector((0, 11, 0))
+        """
         return TonalVector(ta.tonal_invert(self, x))
 
-    # __eq__ not needed -- will be evaluated as a tuple
+    def __eq__(self, x):
+        """
+        >>> TonalVector((0,1,0)) == (0,1,0)
+        True
+
+        >>> TonalVector((0,1)) == TonalVector((1,1))
+        False
+
+        >>> TonalVector((0,1)) == 1
+        True
+
+        >>> int(TonalVector((0,1))) == int(TonalVector((1,1)))
+        True
+        """
+        if type(self) == type(x):
+            return tuple(self) == tuple(x)
+        return tuple(self) == x or int(self) == x
 
 
 
@@ -125,66 +235,244 @@ class TonalVector(tuple):
         # letter name
         @property
         def _ln(self):
+            """The letter name (without sharps or flats) of the note.
+            
+            Examples
+            --------
+
+            >>> TonalVector((0,0)).note._ln
+            'C'
+
+            >>> TonalVector((0,1)).note._ln
+            'C'
+            """
             return self._v._Q.ln.upper()
 
         # how sharp or flat
         @property
-        def _modifier_value(self): 
+        def _modifier_value(self):
+            """A number representing the distance in halfsteps between the named note
+            and the natural version of the named note.
+
+            >>> TonalVector((0,1)).note._modifier_value # C sharp
+            1
+
+            >>> TonalVector((4,6,1)).note._modifier_value # G flat
+            -1
+            """
+
             return  self._v.c - self._v._Q.c
 
         @property
         def _modifier(self):
+            """A dict of info about how to represent the modifier (sharp, flat, natural).
+
+            >>> TonalVector((0,0)).note._modifier == {'v': 'natural', 'u':'♮', 'a':'', 'ly':''}
+            True
+            """
             return AC[self._modifier_value]
 
         def _unicode(self, octave_modifier=0):
+            """Returns a human readable representation of the note, with Unicode modifiers (♯, ♭).
+            The octave_modifier can be used to set the octave designation for middle C.
+            (In OMK, middle C == C0. In MIDI etc., middle C == C4).
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note._unicode()
+            'C♯'
+
+            >>> TonalVector((1,1,0)).note._unicode(4)
+            'D♭4'
+            """
             ustr = self._ln
 
             if self._modifier_value:
                 ustr = "".join([ustr, self._modifier.u])
 
             if self._v._has_octave:
-                ustr = " ".join([ustr, str(self._v.o + octave_modifier)])
+                ustr = "".join([ustr, str(self._v.o + octave_modifier)])
             
             return ustr
 
         @property
         def unicode(self):
+            """A human readable representation of the note, with Unicode modifiers (♯, ♭).
+            If the note has an octave designation, middle C == C0.
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note.unicode
+            'C♯'
+
+            >>> TonalVector((1,1,0)).note.unicode
+            'D♭0'
+            """
             return self._unicode()
 
         @property
         def unicode_C4(self):
+            """A human readable representation of the note, with Unicode modifiers (♯, ♭).
+            If the note has an octave designation, middle C == C4.
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note.unicode_C4
+            'C♯'
+
+            >>> TonalVector((1,1,0)).note.unicode_C4
+            'D♭4'
+            """
             return self._unicode(octave_modifier=4)
 
         def _ascii(self, octave_modifier=0):
+            """Returns a human readable representation of the note, with ascii modifiers (#, b).
+            The octave_modifier can be used to set the octave designation for middle C.
+            (In OMK, middle C == C0. In MIDI etc., middle C == C4).
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note._ascii()
+            'C#'
+
+            >>> TonalVector((1,1,0)).note._ascii(4)
+            'Db4'
+            """
             astr = self._ln
 
             if self._modifier_value:
                 astr = "".join([astr, self._modifier.a])
 
             if self._v._has_octave:
-                astr = " ".join([astr, str(self._v.o + octave_modifier)])
+                astr = "".join([astr, str(self._v.o + octave_modifier)])
             
             return astr
             
         @property
         def ascii(self):
+            """A human readable representation of the note, with Ascii modifiers (#, b).
+            If the note has an octave designation, middle C == C0.
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note.ascii
+            'C#'
+
+            >>> TonalVector((1,1,0)).note.ascii
+            'Db0'
+            """
             return self._ascii()
 
         @property
         def ascii_C4(self):
+            """A human readable representation of the note, with Ascii modifiers (#, b).
+            If the note has an octave designation, middle C == C4.
+
+            Examples
+            --------
+
+            >>> TonalVector((0,1)).note.ascii_C4
+            'C#'
+
+            >>> TonalVector((1,1,0)).note.ascii_C4
+            'Db4'
+            """
             return self._ascii(octave_modifier=4)
 
         @property
-        def ly(self, show_octave=False):
-            lystr = self._ln
+        def ly_chroma(self):
+            """The Lilypond representation of the note name, 
+            without an octave designation.
 
-            if self._modifier_value:
-                lystr = "".join([lystr, self._modifier.ly])
+            Examples
+            --------
 
-            if self._v._has_octave and show_octave:
-                lystr = " ".join([lystr, str(self._v.o)])
-            
-            return lystr
+            >>> TonalVector((0,1)).note.ly_chroma # C sharp
+            'ces'
+
+            >>> TonalVector((6,10,1)).note.ly_chroma # B flat, with an octave designation
+            'bis'
+            """
+
+            return "".join([self._ln.lower(), self._modifier.ly])
+
+        @property
+        def ly_abs8ve(self):
+            """The Lilypond representation of the note name,
+            with an absolute octave designation. 
+            (see: http://lilypond.org/doc/v2.18/Documentation/learning/absolute-note-names)
+
+            Examples
+            --------
+
+            >>> TonalVector((0,0,1)).note.ly_abs8ve # C above middle C
+            "c'"
+
+            >>> TonalVector((6,10,-1)).note.ly_abs8ve # B flat below middle C
+            'bis,'
+
+            >>> TonalVector((3,6,0)).note.ly_abs8ve # F sharp in octave of middle c
+            'fes'
+
+            >>> TonalVector((3,6)).note.ly_abs8ve # F sharp, no octave designation
+            'fes'
+
+            >>> TonalVector((1,1,4)).note.ly_abs8ve # D flat, 4 octaves above middle c
+            "dis''''"
+
+            >>> TonalVector((1,1,-4)).note.ly_abs8ve # D flat, 4 octaves below middle c
+            'dis,,,,'
+            """
+
+            if not self._v._has_octave:
+                return self.ly_chroma
+
+            if self._v.o < 0:
+                ostr = ","
+            else:
+                ostr = "'"
+
+            return "".join([self.ly_chroma, ostr*abs(self._v.o)])
+
+
+        def ly_rel8ve(self, prev=None):
+            """Returns the Lilypond representation of the note name,
+            with a relative octave designation, based on the previous note.
+
+            >>> TonalVector((3,5,0)).note.ly_rel8ve(TonalVector((0,0,0)))
+            'f'
+
+            >>> TonalVector((4,7,0)).note.ly_rel8ve(TonalVector((0,0,0)))
+            "g'"
+
+            >>> TonalVector((3,5,-1)).note.ly_rel8ve(TonalVector((0,0,0)))
+            'f,'
+
+            >>> TonalVector((4,7,-1)).note.ly_rel8ve(TonalVector((0,0,0)))
+            'g'
+            """
+            if prev == None:
+                return self.ly_abs8ve
+
+            if self._v.distance(prev).d <= 3:
+                return self.ly_chroma
+
+            closer_chroma = prev.nearest_instance(self._v)
+
+            octave_distance = self._v.o - closer_chroma.o
+
+            if octave_distance < 0:
+                ostr = ","
+            else:
+                ostr = "'"
+
+            return "".join([self.ly_chroma, ostr*abs(octave_distance)]) 
+
 
         @property
         def verbose(self):

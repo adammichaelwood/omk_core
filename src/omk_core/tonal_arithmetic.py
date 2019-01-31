@@ -71,8 +71,8 @@ def tonal_diff(x, y):
 def tonal_invert(x, y=(0,0)):
     """Returns the inversion of x on y.
 
-    The inversion is the value which is as far below x
-    as y is above x.
+    The inversion is the value which is as far below y
+    as x is above y.
 
     Examples
     --------
@@ -85,7 +85,12 @@ def tonal_invert(x, y=(0,0)):
 
     >>> tonal_invert((4,7), (2,4)) # G is a min 3rd up from E. Down a min 3rd from E is C#.
     (0, 1)
+
+    >>> tonal_invert((0,1,0))
+    (0, 11, 0)
     """
+
+    x, y = qualify_octave_as_needed(x, y)
 
     return tonal_diff(y, tonal_diff(x, y))
 
@@ -159,16 +164,73 @@ def tonal_int(x):
         return x[1]
 
 def tonal_greater_of(x,y):
+    if tonal_int(x) == tonal_int(y):
+        if x[0] > y[0]:
+            return x
+        else:
+            return y
     if tonal_int(x) > tonal_int(y):
         return x
     else:
         return y
 
 def tonal_lesser_of(x,y):
+    if tonal_int(x) == tonal_int(y):
+        if x[0] < y[0]:
+            return x
+        else:
+            return y
     if tonal_int(x) < tonal_int(y):
         return x
     else:
         return y
+
+def tonal_abs_diff(x,y):
+    """Returns an tuple representing the smallest difference between two tonal primitives.
+
+    Examples
+    --------
+
+    >>> tonal_abs_diff((0,0),(5,9))
+    (2, 3)
+
+    >>> x, y = (0,0), (4,6)
+    >>> tonal_abs_diff(x,y) == tonal_abs_diff(x,tonal_invert(y))
+    True
+
+    >>> tonal_abs_diff((0,0,0), (6,11,-1))
+    (1, 1, 0)
+    """
+    x,y = qualify_octave_as_needed(x,y)
+    if len(x) == 3:
+        return tonal_diff(tonal_greater_of(x,y), tonal_lesser_of(x,y))
+
+    return tonal_lesser_of(tonal_diff(x,y), tonal_diff(y,x))
+
+def tonal_nearest_instance(x,y):
+    """
+    >>> tonal_nearest_instance((0,0,0), (1,2,-1))
+    (1, 2, 0)
+
+    >>> tonal_nearest_instance((0,0,0), (6,11,3))
+    (6, 11, -1)
+
+    >>> tonal_nearest_instance((0,0), (6,11,-1))
+    (6, 11)
+    """
+    if len(x) == 2:
+        return (y[0], y[1])
+
+    d = y[0]
+    c = y[1]
+    o = x[2]
+
+    o = [o, o-1, o+1]
+
+    candidates = {tonal_int( tonal_abs_diff( (d,c,z), x ) ):(d,c,z) for z in o}
+
+    return candidates[min(candidates)]
+
 
 
 if __name__ == "__main__":
