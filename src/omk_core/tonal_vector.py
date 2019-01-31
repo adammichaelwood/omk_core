@@ -499,6 +499,20 @@ class TonalVector(tuple):
 
             return "".join([self._ln, mod_text, o])
 
+        def __repr__(self):
+            """
+            >>> TonalVector((0, 0, 0)).note
+            TonalVector((0, 0, 0)).note
+            """
+            return "".join([self._v.__repr__(), ".note"])
+
+        def __str__(self):
+            """
+            >>> str(TonalVector((0, 0, 0)).note)
+            'C0 | (0, 0, 0)'
+            """
+            return "".join([self.unicode, " | ", str(tuple(self._v))])
+
     
     class Interval():
 
