@@ -1,6 +1,7 @@
 import math
 
-from ..utils.method_dispatch import methoddispatch
+from utils.method_dispatch import methoddispatch
+from functools import singledispatch
 
 """
 :dfn:`Quality` is a characteristic of an :term:`interval`
@@ -70,44 +71,6 @@ class IntervalQuality:
 
     qualities = {}
 
-    def __new__(cls, name, rel_number=None):
-        """If an IntervalQuality is instantiated
-        with an existing name and no number,
-        an existing IntervalQuality is returned.
-
-        >>> IntervalQuality("test_quality", 100) is IntervalQuality("test_quality")
-        True
-
-        >>> IntervalQuality.qualities[0] is IntervalQuality("perfect")
-        True
-
-        """
-
-        if rel_number is None:
-            return cls._get_quality(name)
-
-        try:
-            return cls._get_quality(rel_number)
-        except:
-            return super().__new__(cls)
-
-    @methoddispatch
-    def _get_quality(cls, q):
-        raise TypeError("The quality identifier supplied is not a supported type.")
-
-    @_get_quality.register(int)
-    @_get_quality.register(float)
-    def _(cls, q):
-        return cls.qualities[q]
-
-
-    @_get_quality.register(str)
-    def _(cls, q):
-        for quality in cls.qualities:
-            if quality.name == q:
-                return quality
-
-
     def __init__(self, name, rel_number):
         self.name = name
         self.__rel_number = rel_number
@@ -155,3 +118,9 @@ class IntervalQuality:
 # Instantiate the Interval Qualities
 for number, name in q_vals.items():
     IntervalQuality(name, number)
+
+
+if __name__ == "__main__":
+    print(IntervalQuality.qualities)
+    import doctest
+    doctest.testmod()

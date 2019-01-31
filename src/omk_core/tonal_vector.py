@@ -1,6 +1,7 @@
 from dotmap import DotMap
 
 import tonal_arithmetic as ta
+import interval_quality as iq
 
 # "M_ajor Scale"
 MS = [
@@ -19,11 +20,11 @@ MS = [DotMap(x) for x in MS]
 # Accidentals
 AC = {
     # halfsteps : verbose, unicode, ascii, ly
-    -2 : {'v': 'double flat', 'u':'𝄫', 'a':'bb', 'ly':'isis' },
+    -2 : {'v': 'double_flat', 'u':'𝄫', 'a':'bb', 'ly':'isis' },
     -1 : {'v': 'flat', 'u':'♭', 'a':'b', 'ly':'is'},
      0 : {'v': 'natural', 'u':'♮', 'a':'', 'ly':''},
      1 : {'v': 'sharp', 'u':'♯', 'a':'#', 'ly':'es'},
-     2 : {'v': 'double sharp', 'u':'𝄪', 'a':'##', 'ly':'eses'},
+     2 : {'v': 'double_sharp', 'u':'𝄪', 'a':'##', 'ly':'eses'},
 }
 
 AC = {i:DotMap(x) for i,x in AC.items()}
@@ -517,7 +518,43 @@ class TonalVector(tuple):
     class Interval():
 
         def __init__(self, vector):
+            """
+            >>> TonalVector((0,0,0)).interval.n
+            1
+
+            >>> TonalVector((0,0,0)).interval.q
+            perfect
+
+            >>> TonalVector((0,1,0)).interval.n
+            1
+
+            >>> TonalVector((0,1,0)).interval.q
+            augmented-from_perfect
+
+            >>> TonalVector((2,4,0)).interval.n
+            3
+
+            >>> TonalVector((2,4,0)).interval.q
+            major
+
+            >>> TonalVector((2,3,0)).interval.n
+            3
+
+            >>> TonalVector((2,3,0)).interval.q
+            minor
+
+            """
             self._v = vector
+            self.n = self._v.d + 1
+            q_rel_number = self._v.c - self._v._Q.c + self._v._Q.q
+            self.q = iq.IntervalQuality.qualities[q_rel_number]
+
+        def __repr__(self):
+            """
+            >>> TonalVector((0, 0, 0,)).interval
+            TonalVector((0, 0, 0)).interval
+            """
+            return "".join([self._v.__repr__(), ".interval"])
 
         @property
         def unicode(self):
