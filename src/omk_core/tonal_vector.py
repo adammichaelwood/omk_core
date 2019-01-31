@@ -476,7 +476,28 @@ class TonalVector(tuple):
 
         @property
         def verbose(self):
-            return " ".join([self._ln, self._modifier.v]).upper()
+            """
+            >>> TonalVector((0,0)).note.verbose
+            'C'
+            
+            >>> TonalVector((0,1)).note.verbose
+            'Csharp'
+
+            >>> TonalVector((0,1,1)).note.verbose
+            'Csharp1'
+
+            """ 
+            if self._v.o == None:
+                o = ""
+            else:
+                o = str(self._v.o)
+
+            if self._modifier_value == 0:
+                mod_text = ""
+            else:
+                mod_text = self._modifier.v
+
+            return "".join([self._ln, mod_text, o])
 
     
     class Interval():
