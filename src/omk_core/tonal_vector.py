@@ -543,11 +543,33 @@ class TonalVector(tuple):
             >>> TonalVector((2,3,0)).interval.q
             minor
 
+            >>> TonalVector((0,11,0)).interval.n
+            1
+
+            >>> TonalVector((0,11,0)).interval.q
+            diminished-from_perfect
+
+            >>> TonalVector((6,0,0)).interval.n
+            7
+
+            >>> TonalVector((6,0,0)).interval.q
+            augmented-from_maj_min
+
+
             """
             self._v = vector
             self.n = self._v.d + 1
             q_rel_number = self._v.c - self._v._Q.c + self._v._Q.q
-            self.q = iq.IntervalQuality.qualities[q_rel_number]
+
+            try:
+                self.q = iq.IntervalQuality.qualities[q_rel_number]
+            except KeyError: # happens at octave breaks
+                try:
+                    q_rel_number_dn = q_rel_number - 12
+                    self.q = iq.IntervalQuality.qualities[q_rel_number_dn]
+                except KeyError:
+                    q_rel_number_up = q_rel_number + 12
+                    self.q = iq.IntervalQuality.qualities[q_rel_number_up]
 
         def __repr__(self):
             """
