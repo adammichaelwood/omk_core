@@ -72,7 +72,8 @@ class IntervalQuality:
     qualities = {}
 
     def __init__(self, name, rel_number):
-        self.name = name
+        self.__full_name = name
+        self.name = " ".join(self.__full_name.split("-")[0].split("_"))
         self.__rel_number = rel_number
         self.chromatic_modifier = self._chromatic_modifier()
         self.qualities[self.__rel_number] = self
@@ -104,14 +105,19 @@ class IntervalQuality:
 
     # String representations
 
+    @property
     def abbr(self):
-        return " ".join([wrd[:3] for wrd in str(self).split()])
+        abbr = " ".join([wrd[:3] for wrd in str(self).split()])
+        if self.__rel_number >= 0:
+            abbr = abbr.capitalize()
+        return abbr
 
     def __str__(self):
-        return " ".join(self.name.split("-")[0].split("_"))
+        return self.name
+        
 
     def __repr__(self):
-        return self.name
+        return "".join([self.__class__.__name__, "('", self.__full_name, "', ", str(self.__rel_number), ")"])
 
 
 

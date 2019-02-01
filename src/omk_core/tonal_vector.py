@@ -1,5 +1,6 @@
 from dotmap import DotMap
 
+from constants import *
 import tonal_arithmetic as ta
 import interval_quality as iq
 
@@ -66,10 +67,10 @@ class TonalVector(tuple):
     def __str__(self):
         """
         >>> print(TonalVector((0,1)))
-        TonalVector((0, 1)) # C♯ | NotImplemented
+        TonalVector((0, 1)) # C♯ | augmented unison
 
         >>> print(TonalVector((2,3,1)))
-        TonalVector((2, 3, 1)) # E♭1 | NotImplemented
+        TonalVector((2, 3, 1)) # E♭1 | minor third
         """
         return "{} # {} | {}".format(repr(self), self.note.unicode, self.interval.unicode)
 
@@ -519,57 +520,93 @@ class TonalVector(tuple):
 
         def __init__(self, vector):
             """
-            >>> TonalVector((0,0,0)).interval.n
+            >>> C_or_P1 = TonalVector((0,0))
+            >>> P1 = C_or_P1.interval
+            >>> P1.q
+            IntervalQuality('perfect', 0)
+            >>> P1.name
+            'perfect unison'
+            >>> P1.abbr
+            'Per1'
+            >>> P1.tiny
+            'P1'
+
+
+            >>> A1 = TonalVector((0,1,0)).interval
+            >>> A1
+            TonalVector((0, 1, 0)).interval
+            >>> A1.n
             1
-
-            >>> TonalVector((0,0,0)).interval.q
-            perfect
-
-            >>> TonalVector((0,1,0)).interval.n
-            1
-
-            >>> TonalVector((0,1,0)).interval.q
-            augmented-from_perfect
+            >>> A1.q
+            IntervalQuality('augmented-from_perfect', 1)
+            >>> A1.name
+            'augmented unison'
+            >>> A1.abbr
+            'Aug1'
+            >>> A1.tiny
+            'A1'
 
             >>> TonalVector((2,4,0)).interval.n
             3
 
             >>> TonalVector((2,4,0)).interval.q
-            major
+            IntervalQuality('major', 0.5)
 
             >>> TonalVector((2,3,0)).interval.n
             3
 
             >>> TonalVector((2,3,0)).interval.q
-            minor
+            IntervalQuality('minor', -0.5)
 
             >>> TonalVector((0,11,0)).interval.n
             1
 
             >>> TonalVector((0,11,0)).interval.q
-            diminished-from_perfect
+            IntervalQuality('diminished-from_perfect', -1)
 
             >>> TonalVector((6,0,0)).interval.n
             7
 
             >>> TonalVector((6,0,0)).interval.q
-            augmented-from_maj_min
+            IntervalQuality('augmented-from_maj_min', 1.5)
 
 
             """
             self._v = vector
             self.n = self._v.d + 1
+            
+            NUMBER = NUMBERS[self._v.d]
+            self.zi = NUMBER.zi
+            self.md = NUMBER.md
+            self.ord = NUMBER.ord
+            self.ord_abbr = "".join([str(self.md), NUMBER.ord_suf])
+            self.i_name = NUMBER.i_name
+            self.rn = NUMBER.rn
+
+            self.q = self._set_quality()
+
+            self.name = " ".join([self.q.name, self.i_name])
+            self.abbr = "".join([self.q.abbr, str(self.n)])
+            self.tiny = "".join([self.q.abbr[0], str(self.n)])
+
+            self.unicode = self.name
+            self.ascii = self.name
+
+
+        def _set_quality(self):
+
             q_rel_number = self._v.c - self._v._Q.c + self._v._Q.q
 
             try:
-                self.q = iq.IntervalQuality.qualities[q_rel_number]
+                return iq.IntervalQuality.qualities[q_rel_number]
             except KeyError: # happens at octave breaks
                 try:
-                    q_rel_number_dn = q_rel_number - 12
-                    self.q = iq.IntervalQuality.qualities[q_rel_number_dn]
+                    q_rel_number_dn = q_rel_number - C_LEN
+                    return iq.IntervalQuality.qualities[q_rel_number_dn]
                 except KeyError:
-                    q_rel_number_up = q_rel_number + 12
-                    self.q = iq.IntervalQuality.qualities[q_rel_number_up]
+                    q_rel_number_up = q_rel_number + C_LEN
+                    return iq.IntervalQuality.qualities[q_rel_number_up]
+
 
         def __repr__(self):
             """
@@ -578,9 +615,6 @@ class TonalVector(tuple):
             """
             return "".join([self._v.__repr__(), ".interval"])
 
-        @property
-        def unicode(self):
-            return "NotImplemented"
 
 if __name__ == "__main__":
     import doctest
