@@ -5,7 +5,7 @@ import tonal_vector as tv
 
 
 def Pitch(nstr, octave_context=None):
-    """Returns a TonalVector from a human readable note string.
+    """Returns a TonalVector from a human readable string representing a note.
 
     Parameters
     ----------
