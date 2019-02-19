@@ -29,6 +29,12 @@ def Interval(istr):
 
     >>> Interval('d2, -1')
     TonalVector((1, 0, -1))
+
+    >>> Interval('dim7, -1')
+    TonalVector((6, 9, -1))
+
+    >>> Interval('min 2, -1')
+    TonalVector((1, 1, -1))
     
     """
 

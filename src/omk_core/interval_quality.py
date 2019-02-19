@@ -54,6 +54,12 @@ class IntervalQuality():
         """
         >>> _get_quality("major").chromatic_modifier
         0
+
+        >>> _get_quality("minor").chromatic_modifier
+        -1
+
+        >>> _get_quality("diminished-from_maj_min").chromatic_modifier
+        -2
         """
         return math.floor(self.__rel_number)
 
@@ -139,12 +145,16 @@ def _(q, d=None):
 
     >>> _get_quality("P")
     IntervalQuality("perfect", 0)
+
+    >>> _get_quality("d", 1)
+    IntervalQuality("diminished-from_maj_min", -1.5)
     """
 
     for rel_number, quality in qualities.items():
         if quality.name.lower() == q.lower():
             return quality
 
+    for rel_number, quality in qualities.items():
         if (len(q) == 1 and q is "M") or q.lower() == "maj":
             return _get_quality("major")
         if (len(q) == 1 and q is "m") or q.lower() == "min":
@@ -173,8 +183,8 @@ def _get_quality_x(q, d): # x= extended
         q_val = q_add
 
     if base_quality == 0.5:
-        if q_add > 0:
-            base_quality == -base_quality
+        if q_add < 0:
+            base_quality = -base_quality
         q_val = base_quality + q_add
 
     return _get_quality(q_val)

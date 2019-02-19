@@ -1,6 +1,7 @@
 from dotmap import DotMap
 
 import tonal_arithmetic as ta
+import interval_quality as iq
 
 # "M_ajor Scale"
 MS = [
@@ -518,10 +519,14 @@ class TonalVector(tuple):
 
         def __init__(self, vector):
             self._v = vector
+            # self.quality = iq._get_quality(vector)
 
         @property
         def unicode(self):
             return "NotImplemented"
+
+        
+
 
 if __name__ == "__main__":
     import doctest
