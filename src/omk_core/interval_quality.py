@@ -1,6 +1,7 @@
 import functools
 import math
 
+from constants import D_LEN, C_LEN
 from utils.method_dispatch import methoddispatch
 import tonal_vector as tv
 
@@ -81,6 +82,7 @@ class IntervalQuality():
 
     # String representations
 
+    @property
     def abbr(self):
         return " ".join([wrd[:3] for wrd in str(self).split()])
 
@@ -100,7 +102,7 @@ for number, name in q_vals.items():
 @functools.singledispatch
 def _get_quality(q, d=None):
     """
-    >>> _get_quality(('x','y'), 2)
+    >>> _get_quality(['x','y'], 2)
     Traceback (most recent call last):
     TypeError: The quality identifier supplied is not a supported type.
 
@@ -115,6 +117,37 @@ def _(q, d=None):
     IntervalQuality("perfect", 0)
     """
     return qualities[q]
+
+@_get_quality.register(tuple)
+def _(v, _=None):
+    """
+    >>> _get_quality((0,0))
+    IntervalQuality("perfect", 0)
+
+    >>> _get_quality((0,11))
+    IntervalQuality("diminished-from_maj_min", -1)
+    """
+    d, c = v[0], v[1]
+    d_val = tv.MS[d]
+    modifier = c - d_val.c
+    base_q_val = d_val.q
+
+    # correct for octave break cases
+    if abs(modifier) > 4: # 4 = triple aug or triple dim
+        if c < d_val.c:
+            d_val_c = d_val.c - C_LEN
+        if c > d_val.c:
+            d_val_c = d_val.c + C_LEN
+        modifier = c - d_val_c
+
+
+
+    if modifier < 0:
+        base_q_val = -base_q_val
+
+    return _get_quality(base_q_val + modifier)
+
+
 
 @_get_quality.register(str)
 def _(q, d=None):
