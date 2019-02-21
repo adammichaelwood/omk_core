@@ -1,8 +1,8 @@
 from dotmap import DotMap
 
-import tonal_arithmetic as ta
-import interval_quality as iq
-from constants import D_LEN, C_LEN
+from . import tonal_arithmetic as ta
+from . import interval_quality as iq
+from .constants import D_LEN, C_LEN
 
 # "M_ajor Scale"
 MS = [
@@ -580,6 +580,20 @@ class TonalVector(tuple):
         @property
         def abbr(self):
             return "".join(self.quality.abbr, str(self.number), self.o)
+
+        def __repr__(self):
+            """
+            >>> TonalVector((0, 0, 0)).interval
+            TonalVector((0, 0, 0)).interval
+            """
+            return "".join([self._v.__repr__(), ".interval"])
+
+        def __str__(self):
+            """
+            >>> str(TonalVector((0, 0, 0)).interval)
+            'perfect 1 | (0, 0, 0)'
+            """
+            return "".join([self.unicode, " | ", str(tuple(self._v))])
 
 
         

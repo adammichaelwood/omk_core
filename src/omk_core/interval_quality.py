@@ -1,9 +1,9 @@
 import functools
 import math
 
-from constants import D_LEN, C_LEN
-from utils.method_dispatch import methoddispatch
-import tonal_vector as tv
+from .constants import D_LEN, C_LEN
+from .utils.method_dispatch import methoddispatch
+from . import tonal_vector as tv
 
 
 
