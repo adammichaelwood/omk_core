@@ -9,8 +9,8 @@ These functions operate on tuples of the form `(d, c, o)`, where
 
 import itertools
 
-from .constants import D_LEN, C_LEN
-from .utils import *
+from ..definitions.constants import D_LEN, C_LEN
+from ..utils import *
 
 #@mus_utils.tonal_args
 def tonal_sum(x, y):
