@@ -1,7 +1,7 @@
 import re
 
-import tonal_arithmetic as ta
-import tonal_vector as tv
+from . import tonal_arithmetic as ta
+from . import tonal_vector as tv
 
 
 def Pitch(nstr, octave_context=None):
