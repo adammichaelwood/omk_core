@@ -224,6 +224,9 @@ class TonalVector(tuple):
             return tuple(self) == tuple(x)
         return tuple(self) == x or int(self) == x
 
+    def __hash__(self):
+        return hash(tuple(self))
+
 
 
 
