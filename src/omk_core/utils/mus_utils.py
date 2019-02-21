@@ -1,4 +1,4 @@
-from constants import *
+from ..constants import *
 
 def tonal_args(func, instance, args, kwargs):
     """Decorates a function that should only take valid tonal primitives as arguments.

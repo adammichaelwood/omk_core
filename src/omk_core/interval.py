@@ -1,7 +1,7 @@
 import re
 
-import tonal_vector as tv
-import interval_quality as iq
+from . import tonal_vector as tv
+from . import interval_quality as iq
 
 _interval_parser = re.compile("([apmdAPMD][a-zA-Z]*)\s?(\d+)\,?\s?([+\-]?\d*)")
 
