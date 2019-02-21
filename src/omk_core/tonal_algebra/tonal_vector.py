@@ -2,7 +2,7 @@ from dotmap import DotMap
 
 from . import tonal_arithmetic as ta
 from . import interval_quality as iq
-from .constants import D_LEN, C_LEN
+from ..definitions.constants import D_LEN, C_LEN
 
 # "M_ajor Scale"
 MS = [
