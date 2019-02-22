@@ -152,11 +152,22 @@ def negative_tuple(x):
 
 def tonal_abs(x):
     """Returns the distance from the origin (Middle C).
+    (No it doesn't.)
     """
 
     return abs(tonal_int(x))
 
 def tonal_int(x):
+    """
+    >>> tonal_int((4,7))
+    7
+
+    >>> tonal_int((4,7,2))
+    31
+
+    This does not work appropriately for negative octaves.
+    (Not sure how it should work, really.)
+    """
 
     try:
         return x[1] + x[2]*(C_LEN)
@@ -164,6 +175,9 @@ def tonal_int(x):
         return x[1]
 
 def tonal_greater_of(x,y):
+    """
+    Not sure this logic makes sense.
+    """
     if tonal_int(x) == tonal_int(y):
         if x[0] > y[0]:
             return x
@@ -175,6 +189,9 @@ def tonal_greater_of(x,y):
         return y
 
 def tonal_lesser_of(x,y):
+    """
+    Not sure this logic makes sense.
+    """
     if tonal_int(x) == tonal_int(y):
         if x[0] < y[0]:
             return x
@@ -208,7 +225,7 @@ def tonal_abs_diff(x,y):
     return tonal_lesser_of(tonal_diff(x,y), tonal_diff(y,x))
 
 def tonal_nearest_instance(x,y):
-    """
+    """Returns the location of y that is closest to x.
     >>> tonal_nearest_instance((0,0,0), (1,2,-1))
     (1, 2, 0)
 
@@ -230,9 +247,3 @@ def tonal_nearest_instance(x,y):
     candidates = {tonal_int( tonal_abs_diff( (d,c,z), x ) ):(d,c,z) for z in o}
 
     return candidates[min(candidates)]
-
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
