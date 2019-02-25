@@ -8,6 +8,10 @@ from ..utils.method_dispatch import methoddispatch
 
 
 q_vals = {
+- 4.5 : 'quad_diminished-from_maj_min',
+- 4.0 : 'quad_diminished-from_perfect',
+- 3.5 : 'trpl_diminished-from_maj_min',
+- 3.0 : 'trpl_diminished-from_perfect',
 - 2.5 : 'dbl_dimished-from_maj_min',
 - 2   : 'dbl_diminished-from_perfect',
 - 1.5 : 'diminished-from_maj_min',
@@ -18,7 +22,11 @@ q_vals = {
   1   : 'augmented-from_perfect',
   1.5 : 'augmented-from_maj_min',
   2   : 'dbl_augmented-from_perfect',
-  2.5 : 'dbl_augmented-from_maj_min'
+  2.5 : 'dbl_augmented-from_maj_min',
+  3.0 : 'trpl_augmented-from_perfect',
+  3.5 : 'trpl_augmented-from_maj_min',
+  4.0 : 'quad_augmented-from_perfect',
+  4.5 : 'quad_augmented-from_maj_min'
 }
 
 qualities = dict()

@@ -20,11 +20,15 @@ MS = [DotMap(x) for x in MS]
 # Accidentals
 AC = {
     # halfsteps : verbose, unicode, ascii, ly
+    -4 : {'v': 'quadruple flat', 'u':'𝄫𝄫', 'a':'bbbb', 'ly':'isisisis' },
+    -3 : {'v': 'triple flat', 'u':'𝄫♭', 'a':'bbb', 'ly':'isisis'},
     -2 : {'v': 'double flat', 'u':'𝄫', 'a':'bb', 'ly':'isis' },
     -1 : {'v': 'flat', 'u':'♭', 'a':'b', 'ly':'is'},
      0 : {'v': 'natural', 'u':'♮', 'a':'', 'ly':''},
      1 : {'v': 'sharp', 'u':'♯', 'a':'#', 'ly':'es'},
      2 : {'v': 'double sharp', 'u':'𝄪', 'a':'##', 'ly':'eses'},
+     3 : {'v': 'triple sharp', 'u':'𝄪♯', 'a':'###', 'ly':'eseses'},
+     4 : {'v': 'quaduple sharp', 'u':'𝄪𝄪', 'a':'####', 'ly':'eseseses'},
 }
 
 AC = {i:DotMap(x) for i,x in AC.items()}
