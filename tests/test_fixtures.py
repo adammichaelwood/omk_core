@@ -18,7 +18,7 @@ def tonal_tuples():
 
 @pytest.fixture
 def tonal_vectors(tonal_tuples):
-    return [omk.TonalVector(x) for x in tonal_tuples()]
+    return [omk.TonalVector(x) for x in tonal_tuples]
 
 @pytest.fixture
 def tonal_oct_tuples(tonal_tuples):
@@ -26,4 +26,4 @@ def tonal_oct_tuples(tonal_tuples):
 
 @pytest.fixture
 def tonal_oct_vectors(tonal_oct_tuples):
-    return [omk.TonalVector(x) for x in tonal_oct_tuples()]
+    return [omk.TonalVector(x) for x in tonal_oct_tuples]

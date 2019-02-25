@@ -1,5 +1,6 @@
 import re
 
+from ..definitions.constants import MS, AC
 from . import tonal_arithmetic as ta
 from . import tonal_vector as tv
 
@@ -134,11 +135,11 @@ def pitch_to_tuple(nstr, octave_context=None):
     m = note_re[2].lower() or ''
     o_str = note_re[3] or ''
     
-    s = [x for x in tv.MS if x.ln == n][0]
+    s = [x for x in MS if x.ln == n][0]
     
     d = s.d
     
-    m_key = [key for key,strs in tv.AC.items() if m in strs.values()][0]
+    m_key = [key for key,strs in AC.items() if m in strs.values()][0]
     
     c = s.c + m_key
     
