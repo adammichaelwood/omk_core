@@ -9,7 +9,7 @@ Why does this file exist, and why __main__? For more info, read:
 - https://docs.python.org/3/using/cmdline.html#cmdoption-m
 """
 # from omk_core.cli import main
-from . import tonal_arithmetic
+#from . import tonal_arithmetic
 
 
 if __name__ == "__main__":

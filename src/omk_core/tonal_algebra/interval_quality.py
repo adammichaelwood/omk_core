@@ -33,8 +33,8 @@ qualities = dict()
 
 class IntervalQuality():
     """
-    >>> len(qualities) == 11
-    True
+    >>> len(qualities)
+    19
 
     >>> qualities[0]
     IntervalQuality("perfect", 0)
