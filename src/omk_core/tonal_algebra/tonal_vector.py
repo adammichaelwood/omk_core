@@ -573,10 +573,3 @@ class TonalVector(tuple):
             """
             return "".join([self.unicode, " | ", str(tuple(self._v))])
 
-
-        
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

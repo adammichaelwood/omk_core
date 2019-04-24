@@ -70,3 +70,6 @@ docs/_build
 
 # Editors
 .vscode/
+
+# Hypothesis testing
+tests/.hypothesis/

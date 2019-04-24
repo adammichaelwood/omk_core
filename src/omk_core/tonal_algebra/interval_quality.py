@@ -231,11 +231,4 @@ def _get_quality_x(q, d): # x= extended
     return _get_quality(q_val)
 
 
-
-
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
     
