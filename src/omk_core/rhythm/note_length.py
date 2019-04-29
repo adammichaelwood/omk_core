@@ -1,6 +1,9 @@
 from fractions import Fraction as Frac
 import itertools
 import math
+import warnings
+
+from ..utils.math import pow2_floor_frac, primes, is_pow2
 
 class NoteLength(Frac):
     """
@@ -114,13 +117,13 @@ class NoteLength(Frac):
         >>> NoteLength(1,8).undot()
         (NoteLength(1, 8), 0)
         """
-        num = self.numerator
-        den = self.denominator
-    
-        dots = int(math.log2(num + 1)) - 1
-        base = NoteLength(num+1, den) * Frac(1,2)
-    
-        return base, dots
+        base_note = NoteLength(pow2_floor_frac(self))
+        dotted_value = base_note
+        dots = 0
+        while dotted_value != self:
+            dots += 1
+            dotted_value = base_note.dot(dots)
+        return self.__class__(base_note), dots
 
     def untuple(self):
         """
@@ -134,35 +137,37 @@ class NoteLength(Frac):
         (NoteLength(1, 4), 7)
 
         >>> NoteLength(1, 4).untuple()
-        (NoteLength(1, 4), 0)
+        (NoteLength(1, 4), None)
         """
-        if math.log2(self).is_integer(): # if is power of 2
+        if is_pow2(self.denominator):
             return (self, None)
-    
-        for tt in ((x*2)+1 for x in itertools.count()):
-            if math.log2(self.denominator/tt).is_integer(): # if is power of 2
-                break
-                
-        return self.__class__(int(self.numerator), int((2 ** math.floor(math.log2(tt)))*self.denominator/tt)), tt
+
+        for tt in primes(3):
+            total_length = self * tt
+            nominal_length = total_length / pow2_floor_frac(tt)
+            if is_pow2(nominal_length.denominator):
+                return self.__class__(nominal_length), tt
 
     # util methods
 
-    def __repr__(self):
-        if self.numerator == 1 and math.log2(self.denominator).is_integer():
-            return "NoteLength({}, {})".format(self.numerator, self.denominator)
+    def _plain_repr(self):
+        return "NoteLength({}, {})".format(self.numerator, self.denominator)
 
-        if not math.log2(self.denominator).is_integer(): # tuplet
+    def __repr__(self):
+        if is_pow2(self.denominator): 
+            return self._plain_repr()
+        
+        untup_base, untup_tt = self.untuple()
+        if untup_tt is not None: # tuplet
             untuple_note, tuplet_divs = self.untuple()
             return "NoteLength.TupletMember({}, {})".format(
-                untuple_note.__repr__(),
-                tuplet_divs.__repr__()
+                untup_base.__repr__(),
+                untup_tt.__repr__()
                 )
 
         # is dotted but isn't tuplet
         undot_note, dots = self.undot()
         return "{}.dot({})".format(undot_note.__repr__(), dots.__repr__())
-
-
 
 
         
@@ -171,7 +176,7 @@ class NoteLength(Frac):
     # Constructors
 
     @classmethod
-    def TupletMember(cls, notated_length="1/4", divisions=3, length=1):
+    def TupletMember(cls, nominal_length="1/4", tuplet_type=3, units=1):
         """
         Returns a NoteLength representing a single note in a tuple.
         Default return a quarter note triplet member.
@@ -179,25 +184,37 @@ class NoteLength(Frac):
         Parameters
         ----------
 
-        notated_length : any type castable to NoteLength
+        nominal_length : any type castable to NoteLength
             The notated length of a single division of the tuplet.
 
-        divisions : int
+        tuplet_type : int
             The number of divisions of the total tuplet length.
 
             The actual length of the total tuplet is
-            one less than the number of divisions times the notated_length.
-            For example, the total value of a quarter note triplet
+            nominal_length times the nearest power of two below tuplet_type.
+            For example:
+            - the total value of a quarter note triplet
             is equal to two quarter notes.
+            - the total value of an eigth note septuplet (7-part)
+            is equal to four eighth notes.
 
-        length : int
+
+        units : number
             The length of the TupletMember,
             as measured in tuplet divisions.
             For example, in a quarter note triplet notated as
             3[half_note, quarter_note], the half note has a length of 2.
         """
-        notated_length = cls(notated_length)
-        numerator = notated_length * (2 ** math.floor(math.log2(divisions)))
-        return cls((numerator * length), divisions) # , (notated_length * length))
+        if not is_pow2(nominal_length):
+            warnings.warn("Making tuplets from dotted notes may fail unexpectedly.", RhythmWarning)
 
+        nl = cls(nominal_length * units)
+
+        total_length = nl * pow2_floor_frac(tuplet_type)
+        member_length = total_length/tuplet_type
+        return cls(member_length)
+
+class RhythmWarning(UserWarning):
+    pass
+warnings.simplefilter('always', RhythmWarning)
     

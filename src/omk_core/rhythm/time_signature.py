@@ -1,7 +1,5 @@
 from fractions import Fraction as Frac 
 
-# from . import time_length as tl
-
 class TimeSignature(Frac):
     """
     The length of musical time in one measure.
