@@ -125,6 +125,14 @@ class NoteLength(Frac):
             dotted_value = base_note.dot(dots)
         return self.__class__(base_note), dots
 
+    def _can_undot(self):
+        base_note = self.__class__(pow2_floor_frac(self))
+        for d in itertools.count():
+            if base_note.dot(d) == self:
+                return True
+            if base_note.dot(d) > self:
+                return False
+
     def untuple(self):
         """
         >>> NoteLength(1, 3).untuple()
@@ -139,10 +147,10 @@ class NoteLength(Frac):
         >>> NoteLength(1, 4).untuple()
         (NoteLength(1, 4), None)
         """
-        if is_pow2(self.denominator):
+        if self._can_undot():
             return (self, None)
 
-        for tt in primes(3):
+        for tt in itertools.count(3): #primes(3):
             total_length = self * tt
             nominal_length = total_length / pow2_floor_frac(tt)
             if is_pow2(nominal_length.denominator):
@@ -154,7 +162,7 @@ class NoteLength(Frac):
         return "NoteLength({}, {})".format(self.numerator, self.denominator)
 
     def __repr__(self):
-        if is_pow2(self.denominator): 
+        if is_pow2(self): 
             return self._plain_repr()
         
         untup_base, untup_tt = self.untuple()
@@ -205,8 +213,8 @@ class NoteLength(Frac):
             For example, in a quarter note triplet notated as
             3[half_note, quarter_note], the half note has a length of 2.
         """
-        if not is_pow2(nominal_length):
-            warnings.warn("Making tuplets from dotted notes may fail unexpectedly.", RhythmWarning)
+        #if not is_pow2(nominal_length):
+        #    warnings.warn("Making tuplets from dotted notes may fail unexpectedly.", RhythmWarning)
 
         nl = cls(nominal_length * units)
 
