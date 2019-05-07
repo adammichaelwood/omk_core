@@ -25,7 +25,7 @@ class NoteLength(Frac):
         NoteLength(1, 1)
 
         >>> NoteLength(1, 8) + 0.25
-        NoteLength(3, 8)
+        NoteLength(1, 4).dot(1)
         """
         return self.__class__(Frac(self) + x)
         
@@ -38,7 +38,7 @@ class NoteLength(Frac):
         NoteLength(1, 1)
 
         >>> 0.25 + NoteLength(1, 8)
-        NoteLength(3, 8)
+        NoteLength(1, 4).dot(1)
         """
         return self.__add__(x)
 
@@ -48,7 +48,7 @@ class NoteLength(Frac):
         NoteLength(1, 8)
 
         >>> NoteLength(1, 2) - Frac(1, 8)
-        NoteLength(3, 8)
+        NoteLength(1, 4).dot(1)
 
         >>> NoteLength(1, 2) - 0.25
         NoteLength(1, 4)
@@ -61,7 +61,7 @@ class NoteLength(Frac):
         NoteLength(1, 4)
 
         >>> 0.25 - NoteLength(1, 16)
-        NoteLength(3, 16)
+        NoteLength(1, 8).dot(1)
         """
         return self.__class__((-self).__add__(x))
 
@@ -92,7 +92,7 @@ class NoteLength(Frac):
     def dot(self, dots=1):
         """
         >>> NoteLength(1, 4).dot()
-        NoteLength(3, 8)
+        NoteLength(1, 4).dot(1)
         """
 
         return sum([self*Frac(1,(2**n)) for n in range(0,dots+1)])
@@ -126,6 +126,13 @@ class NoteLength(Frac):
         return self.__class__(base_note), dots
 
     def _can_undot(self):
+        """
+        >>> NoteLength(5,16)._can_undot()
+        False
+
+        >>> NoteLength(7,16)._can_undot()
+        True
+        """
         base_note = self.__class__(pow2_floor_frac(self))
         for d in itertools.count():
             if base_note.dot(d) == self:
@@ -150,7 +157,7 @@ class NoteLength(Frac):
         if self._can_undot():
             return (self, None)
 
-        for tt in itertools.count(3): #primes(3):
+        for tt in itertools.count(3):
             total_length = self * tt
             nominal_length = total_length / pow2_floor_frac(tt)
             if is_pow2(nominal_length.denominator):
@@ -159,9 +166,31 @@ class NoteLength(Frac):
     # util methods
 
     def _plain_repr(self):
+        """
+        >>> NoteLength(5,16)._plain_repr()
+        'NoteLength(5, 16)'
+
+        >>> NoteLength(1,4)._plain_repr()
+        'NoteLength(1, 4)'
+        """
         return "NoteLength({}, {})".format(self.numerator, self.denominator)
 
-    def __repr__(self):
+        
+    def __repr__(self):    
+        """
+        >>> NoteLength(1, 4)
+        NoteLength(1, 4)
+
+        >>> NoteLength(1, 4).dot(2)
+        NoteLength(1, 4).dot(2)
+
+        >>> NoteLength.TupletMember(NoteLength(1, 4), 3)
+        NoteLength.TupletMember(NoteLength(1, 4), 3)
+
+        >>> NoteLength.TupletMember(NoteLength(1, 4).dot(2), 3)
+        NoteLength.TupletMember(NoteLength(1, 4).dot(2), 3)
+        """
+
         if is_pow2(self): 
             return self._plain_repr()
         
@@ -176,9 +205,6 @@ class NoteLength(Frac):
         # is dotted but isn't tuplet
         undot_note, dots = self.undot()
         return "{}.dot({})".format(undot_note.__repr__(), dots.__repr__())
-
-
-        
 
 
     # Constructors
@@ -212,6 +238,18 @@ class NoteLength(Frac):
             as measured in tuplet divisions.
             For example, in a quarter note triplet notated as
             3[half_note, quarter_note], the half note has a length of 2.
+
+        Examples
+        --------
+
+        >>> NoteLength.TupletMember(NoteLength(1,4), 3)
+        NoteLength.TupletMember(NoteLength(1, 4), 3)
+
+        >>> NoteLength.TupletMember(NoteLength(1,4), 5)
+        NoteLength.TupletMember(NoteLength(1, 4), 5)
+
+        >>> NoteLength.TupletMember(NoteLength(1,4).dot(3), 5)
+        NoteLength(1, 4).dot(1)
         """
         #if not is_pow2(nominal_length):
         #    warnings.warn("Making tuplets from dotted notes may fail unexpectedly.", RhythmWarning)
@@ -221,8 +259,4 @@ class NoteLength(Frac):
         total_length = nl * pow2_floor_frac(tuplet_type)
         member_length = total_length/tuplet_type
         return cls(member_length)
-
-class RhythmWarning(UserWarning):
-    pass
-warnings.simplefilter('always', RhythmWarning)
     

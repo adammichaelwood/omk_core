@@ -12,3 +12,11 @@ def primes(start):
 
 def is_pow2(x):
     return math.log2(x).is_integer()
+
+def divide_by_largest_pow2_factor(x):
+    for f in (2**n for n in itertools.count()):
+        if f > x/2:
+            break
+        if x%f == 0:
+            best_f = f
+    return int(x/best_f)
