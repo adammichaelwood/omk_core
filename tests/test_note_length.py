@@ -71,3 +71,13 @@ def test_tuple_untuple(nl, tt):
 
         assert note_length == nl
         assert best_tt == tuplet_type
+
+@given(sampled_from(base_note_lengths), sampled_from([3,5,7,11,13]))
+def test_tuple_repr(nl, tt):
+    rpr = omk.NoteLength.TupletMember(nl, tt).__repr__()
+    assert rpr == "NoteLength.TupletMember({}, {})".format(nl.__repr__(), tt.__repr__())
+
+@given(sampled_from(base_note_lengths), integers(1,9))
+def test_dotted_repr(nl, d):
+    rpr = nl.dot(d).__repr__()
+    assert rpr == "{}.dot({})".format(nl.__repr__(), str(d))

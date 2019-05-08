@@ -134,7 +134,7 @@ class NoteLength(Frac):
         True
         """
         base_note = self.__class__(pow2_floor_frac(self))
-        for d in itertools.count():
+        for d in itertools.count():     # pragma: no branch # loop will not exit
             if base_note.dot(d) == self:
                 return True
             if base_note.dot(d) > self:
@@ -157,7 +157,7 @@ class NoteLength(Frac):
         if self._can_undot():
             return (self, None)
 
-        for tt in itertools.count(3):
+        for tt in itertools.count(3): # pragma: no branch # loop will not exit
             total_length = self * tt
             nominal_length = total_length / pow2_floor_frac(tt)
             if is_pow2(nominal_length.denominator):
