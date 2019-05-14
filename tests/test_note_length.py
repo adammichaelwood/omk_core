@@ -44,7 +44,6 @@ def test_mul_note_lengths_fractions(x, y):
     assert x * y == y * x
     assert (x * y) / y == x
 
-
 @given(sampled_from(base_note_lengths), integers(0,10))
 def test_dots(nl, d):
     assert (nl, d) == nl.dot(d).undot()

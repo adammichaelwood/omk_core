@@ -85,7 +85,15 @@ class NoteLength(Frac):
         """
         return self.__mul__(x)
 
+    def __truediv__(self, x):
+        """
+        >>> NoteLength(1, 4) * 2
+        NoteLength(1, 2)
 
+        >>> NoteLength(1, 4) * 0.5
+        NoteLength(1, 8)
+        """
+        return self.__class__(Frac(self) / x)
 
     # rhythmic methods
 
