@@ -133,7 +133,7 @@ def _(v, _=None):
     IntervalQuality("perfect", 0)
 
     >>> _get_quality((0,11))
-    IntervalQuality("diminished-from_maj_min", -1)
+    IntervalQuality("diminished-from_perfect", -1)
     """
     d, c = v[0], v[1]
     d_val = MS[d]

@@ -9,6 +9,7 @@ class TonalVector(tuple):
     #            '_Q', '_has_octave']
     
     def __new__(cls, tp):
+        tp = ta._tonal_modulo(tp)
         return super(TonalVector, cls).__new__(TonalVector, tp)
         
     def __init__(self, tp):
