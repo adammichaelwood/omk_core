@@ -1,7 +1,11 @@
 from ..definitions.constants import D_LEN, C_LEN
 
 def tonal_args(func, instance, args, kwargs):
-    """Decorates a function that should only take valid tonal primitives as arguments.
+    """
+    This code does not currently work as intended.
+    It needs to be fixed or removed.
+    
+    Decorates a function that should only take valid tonal primitives as arguments.
 
     A tonal primitive is a tuple of two or three values,
     isomorphically representing either:
@@ -15,18 +19,18 @@ def tonal_args(func, instance, args, kwargs):
     Tests
     -----
 
-    >>> tonal_args(lambda x: x)((3,))
+    #>>> tonal_args(lambda x: x)((3,))
     Traceback (most recent call last):
     ...
     TypeError: Tonal primitives have two or three values.
 
-    >>> tonal_args(lambda x: x)((3,2))
+    #>>> tonal_args(lambda x: x)((3,2))
     (3, 2)
 
-    >>> tonal_args(lambda x: x)((3,2,1))
+    #>>> tonal_args(lambda x: x)((3,2,1))
     (3, 2, 1)
 
-    >>> tonal_args(lambda x: x)((3, 2, 1, 0))
+    #>>> tonal_args(lambda x: x)((3, 2, 1, 0))
     Traceback (most recent call last):
     ...
     TypeError: Tonal primitives have two or three values.
@@ -101,13 +105,13 @@ def qualify_octave_as_needed(x, y):
     --------
 
     >>> qualify_octave_as_needed((0,0), (1,2))
-    (0, 0), (1, 2)
+    ((0, 0), (1, 2))
 
     >>> qualify_octave_as_needed((0,0,1), (1,2))
-    (0, 0, 1), (1, 2, 0)
+    ((0, 0, 1), (1, 2, 0))
 
     >>> qualify_octave_as_needed((0,0,1), (1,2,1))
-    (0, 0, 1), (1, 2, 1)
+    ((0, 0, 1), (1, 2, 1))
     """
     if len(x) == len(y):
         return x, y

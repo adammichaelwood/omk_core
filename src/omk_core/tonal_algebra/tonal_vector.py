@@ -2,38 +2,14 @@ from dotmap import DotMap
 
 from . import tonal_arithmetic as ta
 from . import interval_quality as iq
-from ..definitions.constants import D_LEN, C_LEN
-
-# "M_ajor Scale"
-MS = [
-    # diatonic value, chromatic value, interval quality (0 or 0.5), letter name, solfege list, function, diszonance
-    {'d':0, 'c':0,  'q':0,   'in': 'unison',  'ln':"c", 'sf':['do'],  'f': 'tonic',        'z': 0},
-    {'d':1, 'c':2,  'q':0.5, 'in': 'second',  'ln':"d", 'sf':['re'],  'f': 'subtonic',     'z': 2},
-    {'d':2, 'c':4,  'q':0.5, 'in': 'third',   'ln':"e", 'sf':['mi'],  'f': 'mediant',      'z': 1},
-    {'d':3, 'c':5,  'q':0,   'in': 'fourth',  'ln':"f", 'sf':['fa'],  'f': 'subdominant',  'z': 2},
-    {'d':4, 'c':7,  'q':0,   'in': 'fifth',   'ln':"g", 'sf':['sol'], 'f': 'dominant',     'z': 0},
-    {'d':5, 'c':9,  'q':0.5, 'in': 'sixth',   'ln':"a", 'sf':['la'],  'f': 'submediant',   'z': 1},
-    {'d':6, 'c':11, 'q':0.5, 'in': 'seventh', 'ln':"b", 'sf':['ti'],  'f': 'leading tone', 'z': 3}
-]
-
-MS = [DotMap(x) for x in MS]
-
-# Accidentals
-AC = {
-    # halfsteps : verbose, unicode, ascii, ly
-    -2 : {'v': 'double flat', 'u':'𝄫', 'a':'bb', 'ly':'isis' },
-    -1 : {'v': 'flat', 'u':'♭', 'a':'b', 'ly':'is'},
-     0 : {'v': 'natural', 'u':'♮', 'a':'', 'ly':''},
-     1 : {'v': 'sharp', 'u':'♯', 'a':'#', 'ly':'es'},
-     2 : {'v': 'double sharp', 'u':'𝄪', 'a':'##', 'ly':'eses'},
-}
-
-AC = {i:DotMap(x) for i,x in AC.items()}
-
+from ..definitions.constants import D_LEN, C_LEN, MS, AC
 
 class TonalVector(tuple):
+    #__slots__ = ['d', 'c','o', 'note', 'interval'
+    #            '_Q', '_has_octave']
     
     def __new__(cls, tp):
+        tp = ta._tonal_modulo(tp)
         return super(TonalVector, cls).__new__(TonalVector, tp)
         
     def __init__(self, tp):
@@ -582,7 +558,7 @@ class TonalVector(tuple):
 
         @property
         def abbr(self):
-            return "".join(self.quality.abbr, str(self.number), self.o)
+            return "".join([self.quality.abbr, str(self.number), self.o])
 
         def __repr__(self):
             """
@@ -598,10 +574,3 @@ class TonalVector(tuple):
             """
             return "".join([self.unicode, " | ", str(tuple(self._v))])
 
-
-        
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()

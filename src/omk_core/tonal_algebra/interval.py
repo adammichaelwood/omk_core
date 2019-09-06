@@ -1,5 +1,6 @@
 import re
 
+from ..definitions.constants import MS
 from . import tonal_vector as tv
 from . import interval_quality as iq
 
@@ -56,7 +57,7 @@ def interval_to_tuple(istr):
     qn = i_re[1]  
     q = iq._get_quality(qn, d)
     
-    c = tv.MS[d].c + q.chromatic_modifier
+    c = MS[d].c + q.chromatic_modifier
 
 
     try:

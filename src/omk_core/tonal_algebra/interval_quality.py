@@ -1,13 +1,17 @@
 import functools
 import math
 
-from ..definitions.constants import D_LEN, C_LEN
+from ..definitions.constants import D_LEN, C_LEN, MS, AC
 from ..utils.method_dispatch import methoddispatch
-from . import tonal_vector as tv
+#from . import tonal_vector as tv
 
 
 
 q_vals = {
+- 4.5 : 'quad_diminished-from_maj_min',
+- 4.0 : 'quad_diminished-from_perfect',
+- 3.5 : 'trpl_diminished-from_maj_min',
+- 3.0 : 'trpl_diminished-from_perfect',
 - 2.5 : 'dbl_dimished-from_maj_min',
 - 2   : 'dbl_diminished-from_perfect',
 - 1.5 : 'diminished-from_maj_min',
@@ -18,15 +22,19 @@ q_vals = {
   1   : 'augmented-from_perfect',
   1.5 : 'augmented-from_maj_min',
   2   : 'dbl_augmented-from_perfect',
-  2.5 : 'dbl_augmented-from_maj_min'
+  2.5 : 'dbl_augmented-from_maj_min',
+  3.0 : 'trpl_augmented-from_perfect',
+  3.5 : 'trpl_augmented-from_maj_min',
+  4.0 : 'quad_augmented-from_perfect',
+  4.5 : 'quad_augmented-from_maj_min'
 }
 
 qualities = dict()
 
 class IntervalQuality():
     """
-    >>> len(qualities) == 11
-    True
+    >>> len(qualities)
+    19
 
     >>> qualities[0]
     IntervalQuality("perfect", 0)
@@ -68,7 +76,7 @@ class IntervalQuality():
 
     def augment(self, halfsteps=1):
         aug_number = self.__rel_number + halfsteps
-        return self.qualities[aug_number]
+        return qualities[aug_number]
 
     def diminish(self, halfsteps=1):
         return self.augment(-halfsteps)
@@ -125,10 +133,10 @@ def _(v, _=None):
     IntervalQuality("perfect", 0)
 
     >>> _get_quality((0,11))
-    IntervalQuality("diminished-from_maj_min", -1)
+    IntervalQuality("diminished-from_perfect", -1)
     """
     d, c = v[0], v[1]
-    d_val = tv.MS[d]
+    d_val = MS[d]
     modifier = c - d_val.c
     base_q_val = d_val.q
 
@@ -201,7 +209,7 @@ def _(q, d=None):
 
 def _get_quality_x(q, d): # x= extended
     q = q.lower()
-    base_quality = tv.MS[d].q
+    base_quality = MS[d].q
     
     if q == 'a' or 'aug' in q:
         q_add = 1 # quality addend
@@ -223,11 +231,4 @@ def _get_quality_x(q, d): # x= extended
     return _get_quality(q_val)
 
 
-
-
-
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
     
