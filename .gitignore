@@ -74,3 +74,6 @@ docs/_build
 # Hypothesis testing
 tests/.hypothesis/
 .hypothesis/
+
+# Virtual Env
+omkenv

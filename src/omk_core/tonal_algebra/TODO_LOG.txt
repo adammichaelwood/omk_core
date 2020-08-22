@@ -1,0 +1,15 @@
+2020-08-22
+
++ added mus21 play util function
+_ is there a way to test this?
+
++ removed tuplet+dotted test. canon usage: no dotted notes inside tuplets
+_ need to document and/or create exception for this
+
+
++ started Note, a module for notes in a composition (pitch + length)
++ add use of attrs library
++ use getattr to dispatch note.x to note.attributes.x, note.pitch.x note.length.x
+
+_ clean up getattr dispatch to go where it actually needs to (way to combine pitch + length into single DRY dispatch)
+_ need to change TonalVector.note to something like pitch_name, to minimize confusion

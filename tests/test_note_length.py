@@ -15,7 +15,7 @@ dotted_tupled_note_lengths = [omk.NoteLength.TupletMember(nl, tt)
                                 for tt in range(1, 100)
                                 for nl in dotted_note_lengths]
 
-note_lengths = base_note_lengths + dotted_note_lengths + tupled_note_lengths + dotted_tupled_note_lengths
+note_lengths = base_note_lengths + dotted_note_lengths + tupled_note_lengths # + dotted_tupled_note_lengths
 fractions = [Frac(nl) for nl in note_lengths]
 
 
